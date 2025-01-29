@@ -17,7 +17,7 @@ INGREDIENTS_URL = reverse("recipe:ingredient-list")
 
 
 def detail_url(ingredient_id):
-    """Create and return a tag detail URL."""
+    """Create and return a ingredient detail URL."""
     return reverse("recipe:ingredient-detail", args=[ingredient_id])
 
 
@@ -33,13 +33,13 @@ class PublicIngredientsApiTests(TestCase):
         self.client = APIClient()
 
     def test_auth_required(self):
-        """Test auth is required for retrieving tags."""
+        """Test auth is required for retrieving ingredients."""
         res = self.client.get(INGREDIENTS_URL)
 
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
-class PrivateTagsApiTests(TestCase):
+class PrivateIngredientsApiTests(TestCase):
     """Test authenticated API requests."""
 
     def setUp(self):
@@ -48,7 +48,7 @@ class PrivateTagsApiTests(TestCase):
         self.client.force_authenticate(self.user)
 
     def test_retrieve_ingredients(self):
-        """Test retrieving a list of tags."""
+        """Test retrieving a list of ingredients."""
         Ingredient.objects.create(user=self.user, name="ing1")
         Ingredient.objects.create(user=self.user, name="ing2")
 
@@ -62,7 +62,7 @@ class PrivateTagsApiTests(TestCase):
         self.assertEqual(res.data, serializer.data)
 
     def test_ingredients_limited_to_user(self):
-        """Test that list of tags is limited to authenticated user."""
+        """Test that list of ingredients is limited to authenticated user."""
         user2 = create_user(email="user2@example.com")
         Ingredient.objects.create(user=user2, name="ing1")
 
@@ -74,25 +74,25 @@ class PrivateTagsApiTests(TestCase):
         self.assertEqual(res.data[0]["name"], ingredient.name)
         self.assertEqual(res.data[0]["id"], ingredient.id)
 
-    # def test_update_tag(self):
-    #     """Test updating a tag."""
-    #     tag = Tag.objects.create(user=self.user, name="After Dinner")
+    def test_update_ingredient(self):
+        """Test updating a ingredient."""
+        ingredient = Ingredient.objects.create(user=self.user, name="After Dinner")
 
-    #     payload = {"name": "Dessert"}
-    #     url = detail_url(tag.id)
-    #     res = self.client.patch(url, payload)
+        payload = {"name": "Dessert"}
+        url = detail_url(ingredient.id)
+        res = self.client.patch(url, payload)
 
-    #     self.assertEqual(res.status_code, status.HTTP_200_OK)
-    #     tag.refresh_from_db()
-    #     self.assertEqual(tag.name, payload["name"])
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        ingredient.refresh_from_db()
+        self.assertEqual(ingredient.name, payload["name"])
 
-    # def test_delete_tag(self):
-    #     """Test deleting a tag."""
-    #     tag = Tag.objects.create(user=self.user, name="After Dinner")
+    def test_delete_ingredient(self):
+        """Test deleting a ingredient."""
+        ingredient = Ingredient.objects.create(user=self.user, name="After Dinner")
 
-    #     url = detail_url(tag.id)
-    #     res = self.client.delete(url)
+        url = detail_url(ingredient.id)
+        res = self.client.delete(url)
 
-    #     self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
-    #     tags = Tag.objects.filter(user=self.user)
-    #     self.assertFalse(tags.exists())
+        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
+        ingredients = Ingredient.objects.filter(user=self.user)
+        self.assertFalse(ingredients.exists())
