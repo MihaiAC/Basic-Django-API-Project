@@ -109,7 +109,7 @@ class PrivateTagsApiTests(TestCase):
             price=Decimal("4.50"),
             user=self.user,
         )
-        recipe.ingredients.add(tag1)
+        recipe.tags.add(tag1)
 
         res = self.client.get(TAGS_URL, {"assigned_only": 1})
 
@@ -134,8 +134,8 @@ class PrivateTagsApiTests(TestCase):
             price=Decimal("4.00"),
             user=self.user,
         )
-        recipe1.ingredients.add(tag)
-        recipe2.ingredients.add(tag)
+        recipe1.tags.add(tag)
+        recipe2.tags.add(tag)
 
         res = self.client.get(TAGS_URL, {"assigned_only": 1})
 
