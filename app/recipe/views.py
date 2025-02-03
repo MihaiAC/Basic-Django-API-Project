@@ -1,5 +1,11 @@
 """Views for the recipe APIs."""
 
+from drf_spectacular.utils import (
+    extend_schema_view,
+    extend_schema,
+    OpenApiParameter,
+)
+from drf_spectacular.types import OpenApiTypes
 from rest_framework import viewsets, mixins, status
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
@@ -18,10 +24,27 @@ class RecipeViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     authentication_classes = [TokenAuthentication]
 
+    def _params_to_ints(self, qs):
+        """Convert a list of strings to integers."""
+        return [int(str_id) for str_id in qs.split(",")]
+
     # We need to retrieve the Recipes only for the current user.
     def get_queryset(self):
         """Retrieve recipes for authenticated users."""
-        return self.queryset.filter(user=self.request.user).order_by("-id")
+        tags = self.request.query_params.get("tags")
+        ingredients = self.request.query_params.get("ingredients")
+        queryset = self.queryset
+        queryset = queryset.filter(user=self.request.user)
+
+        if tags:
+            tag_ids = self._params_to_ints(tags)
+            queryset = queryset.filter(tags__id__in=tag_ids)
+
+        if ingredients:
+            ingredient_ids = self._params_to_ints(ingredients)
+            queryset = queryset.filter(ingredients__id__in=ingredient_ids)
+
+        return queryset.order_by("-id")
 
     # If the action is list, return RecipeSerializer.
     def get_serializer_class(self):
