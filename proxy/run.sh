@@ -9,4 +9,4 @@ set -e
 envsubst < /etc/nginx/default.conf.tpl > /etc/nginx/conf.d/default.conf
 
 # Run nginx in the foreground (since it is run in a separate Docker container).
-nginx -g 'daemon off';
+nginx -g 'daemon off;'
