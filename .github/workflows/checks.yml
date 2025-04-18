@@ -8,8 +8,8 @@ on: [push]
 # Actions to perform on trigger
 jobs:
   # Job ID
-  test-lint:
-    name: Test and lint
+  test-lint-coverage:
+    name: Test, lint, generate coverage
     runs-on: ubuntu-20.04
     steps:
       - name: Login to Docker Hub
@@ -17,10 +17,19 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USER }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Test
-        run: docker compose run --rm app sh -c "python manage.py wait_for_db && python manage.py test"
+
+      - name: Test and generate coverage
+        run: docker compose run --rm app sh -c "python manage.py wait_for_db && coverage run manage.py test && coverage xml"
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./app/coverage.xml
+          fail_ci_if_error: true
+
       - name: Lint
         run: docker compose run --rm app sh -c "flake8"
-      
