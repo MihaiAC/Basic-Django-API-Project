@@ -1,5 +1,7 @@
 # DRF Recipes Practice API
 
+[![codecov](https://codecov.io/gh/MihaiAC/drf-recipes-practice-api/branch/main/graph/badge.svg)](https://codecov.io/gh/MihaiAC/drf-recipes-practice-api)
+
 A REST API built with Django Rest Framework, designed to simulate the backend needs of a recipe-saving app. The project’s main goal was to gain hands-on experience with DRF, apply TDD principles, and learn how to Dockerize a Django application.
 
 ## Key Features
@@ -54,4 +56,4 @@ docker compose exec app python manage.py test
 
 ## References
 
-This project is based on the [Django Advanced Course](https://www.udemy.com/course/django-python-advanced/).
+This project is based on this [course](https://www.udemy.com/course/django-python-advanced/).
